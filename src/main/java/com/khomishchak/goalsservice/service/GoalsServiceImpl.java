@@ -10,6 +10,7 @@ import com.khomishchak.goalsservice.model.GoalType;
 import com.khomishchak.goalsservice.model.SelfGoal;
 import com.khomishchak.goalsservice.model.TransactionChangeStateDTO;
 import com.khomishchak.goalsservice.model.TransactionType;
+import com.khomishchak.goalsservice.model.transaction.CreateNewRecordTransaction;
 import com.khomishchak.goalsservice.repository.CryptoGoalsTableRepository;
 import com.khomishchak.goalsservice.repository.SelfGoalRepository;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -88,6 +89,13 @@ public class GoalsServiceImpl implements GoalsService {
     }
 
     @Override
+    public CryptoGoalsTable updateCryptoGoalsTable(CreateNewRecordTransaction transaction, long tableId) {
+        CryptoGoalsTable table = getCryptoGoalsTableOrThrowException(tableId);
+        table.addNewRecord(new CryptoGoalsTableRecord(transaction));
+        return cryptoGoalsTableRepository.save(table);
+    }
+
+    @Override
     public List<SelfGoal> saveAll(Iterable<SelfGoal> entities) {
         return selfGoalRepository.saveAll(entities);
     }
@@ -103,8 +111,6 @@ public class GoalsServiceImpl implements GoalsService {
     }
 
     private void applyTransactionToRecord(CryptoGoalsTableRecord record, CryptoGoalTableTransaction transaction) {
-        // TODO: make it possible to create new record if the name of trancations is not the same as for the record
-        //  so this transaction will mean new crypto in users portfolio (only BUY transactions should be handled in this case)
         if(!record.getName().equals(transaction.getTicker())) return;
         record.setAverageCost(calculateNewAveragePriceAfterTransaction(record, transaction));
         record.setQuantity(calculateNewQuantity(record, transaction));

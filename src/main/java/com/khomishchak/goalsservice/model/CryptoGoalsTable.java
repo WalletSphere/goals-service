@@ -33,4 +33,8 @@ public class CryptoGoalsTable {
     private List<CryptoGoalsTableRecord> tableRecords;
 
     private Long userId;
+
+    public void addNewRecord(CryptoGoalsTableRecord record) {
+        tableRecords.add(record);
+    }
 }

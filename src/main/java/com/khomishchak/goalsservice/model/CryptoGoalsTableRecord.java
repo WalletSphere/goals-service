@@ -1,5 +1,6 @@
 package com.khomishchak.goalsservice.model;
 
+import com.khomishchak.goalsservice.model.transaction.CreateNewRecordTransaction;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.Transient;
 import lombok.AllArgsConstructor;
@@ -30,4 +31,11 @@ public class CryptoGoalsTableRecord {
 
     @Transient
     private boolean finished;
+
+    public CryptoGoalsTableRecord(CreateNewRecordTransaction transaction) {
+        this.name = transaction.name();
+        this.quantity = transaction.quantity();
+        this.averageCost = transaction.price();
+        this.goalQuantity = transaction.goalQuantity();
+    }
 }

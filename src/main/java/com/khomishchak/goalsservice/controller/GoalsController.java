@@ -3,9 +3,11 @@ package com.khomishchak.goalsservice.controller;
 import com.khomishchak.goalsservice.model.CryptoGoalTableTransaction;
 import com.khomishchak.goalsservice.model.CryptoGoalsTable;
 import com.khomishchak.goalsservice.model.SelfGoal;
+import com.khomishchak.goalsservice.model.transaction.CreateNewRecordTransaction;
 import com.khomishchak.goalsservice.service.GoalsService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -50,6 +52,12 @@ public class GoalsController {
     @PutMapping("/{tableId}/crypto-tables")
     public ResponseEntity<CryptoGoalsTable> updateCryptoGoalsTableWithSingleTransaction(
             @RequestBody CryptoGoalTableTransaction transaction, @PathVariable Long tableId) {
+        return new ResponseEntity<>(goalsService.updateCryptoGoalsTable(transaction, tableId), HttpStatus.OK);
+    }
+
+    @PostMapping("/{tableId}/crypto-tables/new")
+    public ResponseEntity<CryptoGoalsTable> addNewRecordInCryptoGoalsTableForSingleTransaction(
+            @RequestBody CreateNewRecordTransaction transaction, @PathVariable Long tableId) {
         return new ResponseEntity<>(goalsService.updateCryptoGoalsTable(transaction, tableId), HttpStatus.OK);
     }
 
