@@ -26,10 +26,10 @@ public class CryptoGoalTableTransaction {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String name;
+    private String ticker;
 
     private TransactionType transactionType;
 
     private BigDecimal quantity;
-    private BigDecimal averagePrice;
+    private BigDecimal price;
 }

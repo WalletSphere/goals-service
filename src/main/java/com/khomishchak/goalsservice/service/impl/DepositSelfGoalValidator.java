@@ -14,7 +14,7 @@ public class DepositSelfGoalValidator implements SelfGoalValidator {
 
     private String getDepositAmountUrl;
 
-    private final static CommonGoalType GOAL_TYPE = CommonGoalType.DEPOSIT_GOAL
+    private final static CommonGoalType GOAL_TYPE = CommonGoalType.DEPOSIT_GOAL;
 
     @Value("${ws.exchanger.deposit.amount.url:http://localhost:8080/balances/transactions-history/period}")
     public void setGetDepositAmountUrl(String getDepositAmountUrl) {

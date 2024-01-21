@@ -75,7 +75,8 @@ public class GoalsServiceImpl implements GoalsService {
     }
 
     @Override
-    public CryptoGoalsTable updateCryptoGoalsTable(CryptoGoalsTable cryptoGoalsTable) {
+    public CryptoGoalsTable updateCryptoGoalsTable(CryptoGoalsTable cryptoGoalsTable, long userId) {
+        cryptoGoalsTable.setUserId(userId);
         return saveCryptoTable(cryptoGoalsTable);
     }
 
@@ -102,7 +103,9 @@ public class GoalsServiceImpl implements GoalsService {
     }
 
     private void applyTransactionToRecord(CryptoGoalsTableRecord record, CryptoGoalTableTransaction transaction) {
-        if(!record.getName().equals(transaction.getName())) return;
+        // TODO: make it possible to create new record if the name of trancations is not the same as for the record
+        //  so this transaction will mean new crypto in users portfolio (only BUY transactions should be handled in this case)
+        if(!record.getName().equals(transaction.getTicker())) return;
         record.setAverageCost(calculateNewAveragePriceAfterTransaction(record, transaction));
         record.setQuantity(calculateNewQuantity(record, transaction));
     }
@@ -148,7 +151,7 @@ public class GoalsServiceImpl implements GoalsService {
     private TransactionChangeStateDTO mapToTransactionChangeStateDTO(CryptoGoalsTableRecord record,
                                                                      CryptoGoalTableTransaction transaction) {
         return TransactionChangeStateDTO.builder()
-                .newOperationAveragePrice(transaction.getAveragePrice())
+                .newOperationAveragePrice(transaction.getPrice())
                 .newOperationQuantity(transaction.getQuantity())
                 .oldRecordAveragePrice(record.getAverageCost())
                 .oldRecordQuantity(record.getQuantity())

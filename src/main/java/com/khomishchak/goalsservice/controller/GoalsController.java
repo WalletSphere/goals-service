@@ -42,8 +42,9 @@ public class GoalsController {
     }
 
     @PutMapping("/crypto-tables")
-    public ResponseEntity<CryptoGoalsTable> updateWholeCryptoGoalsTable(@RequestBody CryptoGoalsTable cryptoGoalsTable) {
-        return new ResponseEntity<>(goalsService.updateCryptoGoalsTable(cryptoGoalsTable), HttpStatus.OK);
+    public ResponseEntity<CryptoGoalsTable> updateWholeCryptoGoalsTable(@RequestHeader("UserId") Long userId,
+                                                                        @RequestBody CryptoGoalsTable cryptoGoalsTable) {
+        return new ResponseEntity<>(goalsService.updateCryptoGoalsTable(cryptoGoalsTable, userId), HttpStatus.OK);
     }
 
     @PutMapping("/{tableId}/crypto-tables")
@@ -59,7 +60,6 @@ public class GoalsController {
 
     @PostMapping("/self-goals")
     public ResponseEntity<List<SelfGoal>> createSelfGoals(@RequestHeader("UserId") Long userId, @RequestBody List<SelfGoal> goals) {
-
         return new ResponseEntity<>(goalsService.createSelfGoals(userId, goals), HttpStatus.OK);
     }
 }

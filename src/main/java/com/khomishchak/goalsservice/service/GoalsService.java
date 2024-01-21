@@ -12,7 +12,7 @@ public interface GoalsService {
 
     CryptoGoalsTable getCryptoGoalsTable(Long userId);
 
-    CryptoGoalsTable updateCryptoGoalsTable(CryptoGoalsTable cryptoGoalsTable);
+    CryptoGoalsTable updateCryptoGoalsTable(CryptoGoalsTable cryptoGoalsTable, long userId);
 
     CryptoGoalsTable updateCryptoGoalsTable(CryptoGoalTableTransaction transaction, long tableId);
 
