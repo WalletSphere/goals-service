@@ -15,6 +15,11 @@ import com.khomishchak.goalsservice.repository.CryptoGoalsTableRepository;
 import com.khomishchak.goalsservice.repository.SelfGoalRepository;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
@@ -26,6 +31,7 @@ import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -35,13 +41,13 @@ public class GoalsServiceImpl implements GoalsService {
 
     private static final String USER_ID = "userId";
     private static final String TICKER = "ticker";
-    private static final String GOAL_START_DATE = "startingDate";
-    private static final String GOAL_END_DATE = "endingDate";
+    private static final String GOAL_START_DATE = "fromDate";
+    private static final String GOAL_END_DATE = "toDate";
 
 
     private String depositWithdrawalTransactionsHistoryUrl;
 
-    @Value("${ws.exchangers.authenticate.deposit-withdrawal-history.url:http://localhost:8080/balances/transactions-history/period}")
+    @Value("${ws.exchangers.authenticate.deposit-withdrawal-history.url:http://localhost:8080/balances/history/transactions/amount}")
     public void setDepositWithdrawalHistoryUrl(String depositWithdrawalTransactionsHistoryUrl) {
         this.depositWithdrawalTransactionsHistoryUrl = depositWithdrawalTransactionsHistoryUrl;
     }
@@ -170,7 +176,7 @@ public class GoalsServiceImpl implements GoalsService {
         List<SelfGoal> result = selfGoalRepository.findAllByUserId(userId);
 
         result.forEach(goal -> {
-            goal.setCurrentAmount(getDepositValueForPeriod(userId, goal.getTicker(), goal.getStartDate(), goal.getEndDate()));
+            goal.setCurrentAmount(requestForDepositValueForPeriod(userId, goal.getTicker(), goal.getStartDate(), goal.getEndDate()));
             goal.setAchieved(goal.getCurrentAmount() > goal.getGoalAmount());
         });
         return result;
@@ -194,15 +200,21 @@ public class GoalsServiceImpl implements GoalsService {
 
     //TODO: will be refactored once we will start using kafka for deposit updates
     // webhooks will be sending us the updates regarding the deposit amount, we will listen to it and set new current value to goal
-    private double getDepositValueForPeriod(long userId, String ticker, LocalDateTime startingDate,
+    private double requestForDepositValueForPeriod(long userId, String ticker, LocalDateTime startingDate,
                                             LocalDateTime endingDate) {
+        // temporary change to be able to send request to balance service without passing token
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set(USER_ID, String.valueOf(userId));
+
         URI targetUrl = UriComponentsBuilder.fromUriString(depositWithdrawalTransactionsHistoryUrl)
-                .queryParam(USER_ID, userId)
                 .queryParam(TICKER, ticker)
                 .queryParam(GOAL_START_DATE, startingDate.toString())
                 .queryParam(GOAL_END_DATE, endingDate.toString())
+                .queryParam("transferTransactionType", "DEPOSIT")
+                .queryParam("transactionStatus", "COMPLETED")
                 .build().encode().toUri();
-        return restTemplate.getForObject(targetUrl, Double.class);
+        return restTemplate.exchange(targetUrl, HttpMethod.GET, new HttpEntity<String>(headers), Double.class).getBody();
     }
 
     private void setPostQuantityValues(CryptoGoalsTableRecord entity) {
