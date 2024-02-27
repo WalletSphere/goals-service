@@ -8,6 +8,7 @@ import com.khomishchak.goalsservice.service.GoalsService;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -26,11 +27,13 @@ public class GoalsScheduledService {
     }
 
     private void closeOverdueAndCreateNewGoals(List<SelfGoal> overdueGoals) {
+        List<SelfGoal> updatedGoals = new ArrayList<>();
         overdueGoals.forEach(overdueGoal -> {
             closeOverdueGoal(overdueGoal);
             SelfGoal newGoal = createNewFromOverdueGoal(overdueGoal);
-            goalsService.saveAll(List.of(overdueGoal, newGoal));
+            updatedGoals.addAll(List.of(overdueGoal, newGoal));
         });
+        goalsService.saveAll(updatedGoals);
     }
 
     private void closeOverdueGoal(SelfGoal overdueGoal) {

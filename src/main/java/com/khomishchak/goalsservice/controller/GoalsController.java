@@ -26,6 +26,8 @@ public class GoalsController {
 
     // TODO: replace @RequestHeader("UserId") with AOP poincut to extract userId before needed controllers
 
+    public static final String USER_ID_HEADER = "UserId";
+
     private final GoalsService goalsService;
 
     public GoalsController(GoalsService goalsService) {
@@ -33,26 +35,26 @@ public class GoalsController {
     }
 
     @PostMapping("/crypto-tables")
-    public ResponseEntity<CryptoGoalsTable> createCryptoGoalsTable(@RequestHeader("UserId") Long userId,
+    public ResponseEntity<CryptoGoalsTable> createCryptoGoalsTable(@RequestHeader(USER_ID_HEADER) Long userId,
                                                                    @RequestBody CryptoGoalsTable requestTable) {
         return new ResponseEntity<>(goalsService.createCryptoGoalsTable(userId, requestTable), HttpStatus.CREATED);
     }
 
     @GetMapping("/crypto-tables")
-    public ResponseEntity<CryptoGoalsTable> getCryptoGoalsTable(@RequestHeader("UserId") Long userId) {
-        return new ResponseEntity<>(goalsService.getCryptoGoalsTable(userId), HttpStatus.OK);
+    public ResponseEntity<CryptoGoalsTable> getCryptoGoalsTable(@RequestHeader(USER_ID_HEADER) Long userId) {
+        return ResponseEntity.ok(goalsService.getCryptoGoalsTable(userId));
     }
 
     @PutMapping("/crypto-tables")
-    public ResponseEntity<CryptoGoalsTable> updateWholeCryptoGoalsTable(@RequestHeader("UserId") Long userId,
+    public ResponseEntity<CryptoGoalsTable> updateWholeCryptoGoalsTable(@RequestHeader(USER_ID_HEADER) Long userId,
                                                                         @RequestBody CryptoGoalsTable cryptoGoalsTable) {
-        return new ResponseEntity<>(goalsService.updateCryptoGoalsTable(cryptoGoalsTable, userId), HttpStatus.OK);
+        return ResponseEntity.ok(goalsService.updateCryptoGoalsTable(cryptoGoalsTable, userId));
     }
 
     @PutMapping("/{tableId}/crypto-tables")
     public ResponseEntity<CryptoGoalsTable> updateCryptoGoalsTableWithSingleTransaction(
             @RequestBody CryptoGoalTableTransaction transaction, @PathVariable Long tableId) {
-        return new ResponseEntity<>(goalsService.updateCryptoGoalsTable(transaction, tableId), HttpStatus.OK);
+        return ResponseEntity.ok(goalsService.updateCryptoGoalsTable(transaction, tableId));
     }
 
     @PostMapping("/{tableId}/crypto-tables/new")
@@ -62,12 +64,12 @@ public class GoalsController {
     }
 
     @GetMapping("/self-goals")
-    public ResponseEntity<List<SelfGoal>> getSelfGoals(@RequestHeader("UserId") Long userId) {
+    public ResponseEntity<List<SelfGoal>> getSelfGoals(@RequestHeader(USER_ID_HEADER) Long userId) {
         return new ResponseEntity<>(goalsService.getSelfGoals(userId), HttpStatus.OK);
     }
 
     @PostMapping("/self-goals")
-    public ResponseEntity<List<SelfGoal>> createSelfGoals(@RequestHeader("UserId") Long userId, @RequestBody List<SelfGoal> goals) {
+    public ResponseEntity<List<SelfGoal>> createSelfGoals(@RequestHeader(USER_ID_HEADER) Long userId, @RequestBody List<SelfGoal> goals) {
         return new ResponseEntity<>(goalsService.createSelfGoals(userId, goals), HttpStatus.OK);
     }
 }
