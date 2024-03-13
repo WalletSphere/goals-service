@@ -23,7 +23,7 @@ public class DepositSelfGoalValidator implements SelfGoalValidator {
 
     private final RestTemplate restTemplate;
 
-    public DepositSelfGoalValidator(@Qualifier("goalServiceRestTemplate") RestTemplate restTemplate) {
+    public DepositSelfGoalValidator(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }
 

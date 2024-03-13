@@ -59,7 +59,7 @@ public class GoalsServiceImpl implements GoalsService {
 
     public GoalsServiceImpl(CryptoGoalsTableRepository cryptoGoalsTableRepository,
                             SelfGoalRepository selfGoalRepository, List<SelfGoalValidator> selfGoalValidators,
-                            @Qualifier("goalServiceRestTemplate") RestTemplate restTemplate) {
+                            RestTemplate restTemplate) {
         this.cryptoGoalsTableRepository = cryptoGoalsTableRepository;
         this.selfGoalRepository = selfGoalRepository;
         this.selfGoalValidators = selfGoalValidators.stream()
